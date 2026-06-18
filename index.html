@@ -1,29 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jay Recall</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jay Recall</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
-<div class="sidebar">
-    <h2>📚 Jay Recall</h2>
-    <p class="tagline">Never Google The Same Thing Twice</p>
-    <nav>
-        <button onclick="showView('dashboard')">🏠 Dashboard</button>
-        <button onclick="showView('add')">➕ Add Entry</button>
-        <button onclick="showView('search')">🔍 Search</button>
-        <button onclick="showView('favorites')">⭐ Favorites</button>
-        <button onclick="exportData()">⚙ Export</button>
-    </nav>
-</div>
 
-<div class="content">
-    <div id="app"></div>
-</div>
+    <div class="app-container">
 
-<script src="js/store.js"></script>
-<script src="js/app.js"></script>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="logo-section">
+                <h1>🧠 Jay Recall</h1>
+                <p>Never Google The Same Thing Twice</p>
+            </div>
+
+            <nav>
+
+                <div class="nav-item active"
+                    onclick="loadDashboard()">
+
+                    🏠 Dashboard
+
+                </div>
+
+                <div class="nav-item"
+                    onclick="loadSearch()">
+
+                    🔍 Recall Search
+
+                </div>
+
+                <div class="nav-item"
+                    onclick="loadAddEntry()">
+
+                    ➕ Add Entry
+
+                </div>
+
+                <div class="nav-item"
+                    onclick="loadKnowledgeBase()">
+
+                    📖 Knowledge Base
+
+                </div>
+
+                <div class="nav-item"
+                    onclick="loadFavorites()">
+
+                    ⭐ Favorites
+
+                </div>
+
+                <div class="nav-item"
+                    onclick="loadSettings()">
+
+                    ⚙ Settings
+
+                </div>
+
+            </nav>
+
+            <div class="sidebar-footer">
+
+                Go get a memory loss.<br>
+                I'm here.
+
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+
+        <main class="content">
+
+            <div class="quick-search">
+
+                <input
+                    placeholder="Search your knowledge..."
+                    onclick="loadSearch()"
+                    readonly
+                >
+
+            </div>
+
+            <div id="content">
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
+
 </body>
+
 </html>

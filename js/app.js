@@ -1,76 +1,546 @@
+function loadDashboard() {
 
-function showView(view){
- const app=document.getElementById('app');
+    const entries =
+        getEntries();
 
- if(view==='dashboard'){
-   const entries=getEntries();
-   app.innerHTML=`
-   <h1>Dashboard</h1>
-   <div class="card">Entries: ${entries.length}</div>
-   `;
- }
+    const recentEntries =
+        entries.slice(0, 5);
 
- if(view==='add'){
-   app.innerHTML=`
-   <h1>Add Entry</h1>
-   <input id="title" placeholder="Title">
-   <input id="category" placeholder="Category">
-   <input id="tags" placeholder="Tags">
-   <textarea id="content" rows="8" placeholder="Content"></textarea>
-   <button onclick="saveEntry()">Save Entry</button>
-   `;
- }
+    const favorites =
+        entries.filter(
+            e => e.favorite
+        );
 
- if(view==='search'){
-   app.innerHTML=`
-   <h1>Search</h1>
-   <input id="searchBox" placeholder="What are you trying to remember?" oninput="performSearch()">
-   <div id="results"></div>
-   `;
- }
+    const categories =
+        [...new Set(
+            entries.map(
+                e => e.category
+            )
+        )];
 
- if(view==='favorites'){
-   const favs=getEntries().filter(x=>x.favorite);
-   app.innerHTML='<h1>Favorites</h1>' + favs.map(e=>`<div class="card">${e.title}</div>`).join('');
- }
+    document.getElementById("content")
+        .innerHTML = `
+
+        <h1 class="page-title">
+
+            Welcome Back 👋
+
+        </h1>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <h3>Entries</h3>
+
+                <h1>${entries.length}</h1>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Favorites</h3>
+
+                <h1>${favorites.length}</h1>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Categories</h3>
+
+                <h1>${categories.length}</h1>
+
+            </div>
+
+        </div>
+        <div class="recent-section">
+
+                <h2>
+                    Recent Knowledge
+                </h2>
+
+                ${
+                    recentEntries.map(entry => `
+
+                        <div class="recent-item">
+
+                            <strong>
+
+                                ${entry.title}
+
+                            </strong>
+
+                            <span>
+
+                                ${entry.category}
+
+                            </span>
+
+                        </div>
+
+                    `).join("")
+
+                }
+
+            </div>
+
+    `;
 }
 
-function saveEntry(){
- const entries=getEntries();
+function loadSearch() {
 
- entries.push({
-   id:Date.now(),
-   title:document.getElementById('title').value,
-   category:document.getElementById('category').value,
-   tags:document.getElementById('tags').value,
-   content:document.getElementById('content').value,
-   favorite:false,
-   createdAt:new Date().toISOString()
- });
+    document.getElementById("content")
+        .innerHTML = `
 
- saveEntries(entries);
- alert('Entry Saved');
- showView('dashboard');
+        <div class="search-page">
+
+            <div class="search-hero">
+
+                <h1>
+                    What are you trying to remember?
+                </h1>
+
+                <p>
+                    Search your knowledge base instantly
+                </p>
+
+                <input
+                    id="searchInput"
+                    class="search-input"
+                    type="text"
+                    placeholder="Docker, Cloudflare, VPN, Linux..."
+                    oninput="performSearch()"
+                >
+
+            </div>
+
+            <div id="searchResults">
+
+            </div>
+
+        </div>
+
+    `;
 }
 
-function performSearch(){
- const q=document.getElementById('searchBox').value.toLowerCase();
- const results=getEntries().filter(e=>
-  JSON.stringify(e).toLowerCase().includes(q)
- );
+function loadAddEntry() {
 
- document.getElementById('results').innerHTML=results.map(e=>
- `<div class="card"><h3>${e.title}</h3><p>${e.category}</p></div>`
- ).join('');
+    document.getElementById("content")
+        .innerHTML = `
+
+        <h1 class="page-title">
+
+            Add Knowledge Entry
+
+        </h1>
+
+        <div class="form-card">
+
+            <input
+                id="title"
+                placeholder="Title"
+            >
+
+            <select id="category">
+
+                <option>
+                    Infrastructure
+                </option>
+
+                <option>
+                    Development
+                </option>
+
+                <option>
+                    Security
+                </option>
+
+                <option>
+                    Networking
+                </option>
+
+                <option>
+                    Commands
+                </option>
+
+                <option>
+                    Troubleshooting
+                </option>
+
+                <option>
+                    Personal
+                </option>
+
+            </select>
+
+            <input
+                id="tags"
+                placeholder="docker, cloudflare"
+            >
+
+            <textarea
+                id="contentText"
+                rows="10"
+                placeholder="Enter knowledge..."
+            ></textarea>
+
+            <button
+                class="primary-btn"
+                onclick="saveEntry()"
+            >
+
+                Save Entry
+
+            </button>
+
+        </div>
+
+    `;
 }
 
-function exportData(){
- const data=JSON.stringify(getEntries(),null,2);
- const blob=new Blob([data],{type:'application/json'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download='jay-recall-backup.json';
- a.click();
+function loadFavorites() {
+
+    const favorites =
+        getEntries().filter(
+            entry => entry.favorite
+        );
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <div class="page-header">
+
+            <h1>
+                Favorites
+            </h1>
+
+            <p>
+                Your most important knowledge
+            </p>
+
+        </div>
+
+        <div class="knowledge-grid">
+
+            ${
+                favorites
+                    .map(renderEntryCard)
+                    .join("")
+            }
+
+        </div>
+
+    `;
+
 }
 
-showView('dashboard');
+function loadSettings() {
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <h1>
+            Settings
+        </h1>
+
+        <div class="settings-card">
+
+            <button
+                class="primary-btn"
+                onclick="exportBackup()">
+
+                Export Backup
+
+            </button>
+
+            <button
+                class="danger-btn"
+                onclick="resetAllData()">
+
+                Reset All Data
+
+            </button>
+
+        </div>
+
+    `;
+}
+
+function loadKnowledgeBase() {
+
+    const entries = getEntries();
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <div class="page-header">
+
+            <h1>Knowledge Base</h1>
+
+            <p>
+                Searchable knowledge entries
+            </p>
+
+        </div>
+
+        <div class="knowledge-grid">
+
+            ${entries.map(renderEntryCard).join("")}
+
+        </div>
+
+    `;
+}
+
+function renderEntryCard(entry) {
+
+    return `
+
+        <div class="knowledge-card">
+
+            <div class="card-top">
+
+                <h3>
+                    ${entry.title}
+                </h3>
+
+                <span class="category-badge">
+
+                    ${entry.category}
+
+                </span>
+
+            </div>
+
+            <div class="tags">
+
+                ${entry.tags}
+
+            </div>
+
+            <div class="card-actions">
+
+                <button
+                    onclick="viewEntry(${entry.id})">
+
+                    👁 View
+
+                </button>
+
+                <button
+                    onclick="toggleFavoriteEntry(${entry.id})">
+
+                    ${
+                        entry.favorite
+                            ? "⭐"
+                            : "☆"
+                    }
+
+                </button>
+
+                <button
+                    onclick="deleteEntryRecord(${entry.id})">
+
+                    🗑
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+function viewEntry(id) {
+
+    const entry =
+        getEntries().find(
+            e => e.id === id
+        );
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <h1>
+            ${entry.title}
+        </h1>
+
+        <p>
+            ${entry.category}
+        </p>
+
+        <hr>
+
+        <pre>
+
+${entry.content}
+
+        </pre>
+
+    `;
+}
+
+function toggleFavoriteEntry(id) {
+
+    toggleFavorite(id);
+
+    loadKnowledgeBase();
+
+}
+
+function deleteEntryRecord(id) {
+
+    if (
+        !confirm(
+            "Delete this entry?"
+        )
+    ) return;
+
+    deleteEntry(id);
+
+    loadKnowledgeBase();
+
+}
+
+function performSearch() {
+
+    const query =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
+
+    const entries =
+        getEntries();
+
+    if (!query) {
+
+        document
+            .getElementById("searchResults")
+            .innerHTML = "";
+
+        return;
+    }
+
+    const results =
+        entries.filter(entry => {
+
+            return (
+
+                entry.title
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                entry.category
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                entry.tags
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                entry.content
+                    .toLowerCase()
+                    .includes(query)
+
+            );
+
+        });
+
+    renderSearchResults(results);
+}
+
+function renderSearchResults(results) {
+
+    const container =
+        document.getElementById(
+            "searchResults"
+        );
+
+    if (results.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                No memories found.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+
+        <div class="knowledge-grid">
+
+            ${results
+                .map(renderEntryCard)
+                .join("")}
+
+        </div>
+
+    `;
+}
+
+function exportBackup() {
+
+    const data =
+        JSON.stringify(
+            getEntries(),
+            null,
+            2
+        );
+
+    const blob =
+        new Blob(
+            [data],
+            {
+                type:
+                    "application/json"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "jay-recall-backup.json";
+
+    a.click();
+
+}
+
+function resetAllData() {
+
+    if (
+        !confirm(
+            "Delete all knowledge entries?"
+        )
+    ) return;
+
+    localStorage.removeItem(
+        "jay_recall_entries"
+    );
+
+    loadDashboard();
+
+}
+
+loadDashboard();
