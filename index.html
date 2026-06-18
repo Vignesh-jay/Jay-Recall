@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jay Recall</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="sidebar">
+    <h2>📚 Jay Recall</h2>
+    <p class="tagline">Never Google The Same Thing Twice</p>
+    <nav>
+        <button onclick="showView('dashboard')">🏠 Dashboard</button>
+        <button onclick="showView('add')">➕ Add Entry</button>
+        <button onclick="showView('search')">🔍 Search</button>
+        <button onclick="showView('favorites')">⭐ Favorites</button>
+        <button onclick="exportData()">⚙ Export</button>
+    </nav>
+</div>
+
+<div class="content">
+    <div id="app"></div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
