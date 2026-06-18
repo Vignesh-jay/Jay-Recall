@@ -436,3 +436,108 @@ body {
 
     margin-bottom: 24px;
 }
+
+.tag-container {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+.tag-chip {
+
+    background: rgba(
+        99,
+        102,
+        241,
+        .2
+    );
+
+    color: #A5B4FC;
+
+    padding: 4px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+}
+
+.mobile-nav {
+
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .sidebar {
+
+        display: none;
+    }
+
+    .mobile-nav {
+
+        position: fixed;
+
+        bottom: 0;
+
+        left: 0;
+
+        right: 0;
+
+        display: flex;
+
+        justify-content: space-around;
+
+        background: #1F2937;
+
+        border-top:
+            1px solid
+            var(--border);
+
+        padding: 10px;
+    }
+
+    .mobile-nav button {
+
+        background: none;
+
+        border: none;
+
+        color: white;
+
+        font-size: 24px;
+    }
+
+    .content {
+
+        padding-bottom: 80px;
+    }
+
+}
+
+.settings-section {
+
+    background: var(--sidebar);
+
+    border-radius: 16px;
+
+    padding: 24px;
+
+    margin-bottom: 20px;
+}
+
+.settings-section h3 {
+
+    margin-bottom: 20px;
+}
+
+.settings-actions {
+
+    display: flex;
+
+    gap: 12px;
+}

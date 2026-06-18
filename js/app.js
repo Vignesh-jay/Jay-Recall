@@ -18,6 +18,13 @@ function loadDashboard() {
             )
         )];
 
+    const lastUpdated =
+        entries.length
+            ? new Date(
+                entries[0].createdAt
+              ).toLocaleDateString()
+            : "Never";
+
     document.getElementById("content")
         .innerHTML = `
 
@@ -58,6 +65,18 @@ function loadDashboard() {
                 <h3>Categories</h3>
 
                 <h1>${categories.length}</h1>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>
+                    Last Update
+                </h3>
+
+                <h1>
+                    ${lastUpdated}
+                </h1>
 
             </div>
 
@@ -228,6 +247,7 @@ function loadFavorites() {
             </p>
 
         </div>
+        <br><br>
 
         <div class="knowledge-grid">
 
@@ -248,25 +268,65 @@ function loadSettings() {
     document.getElementById("content")
         .innerHTML = `
 
-        <h1>
+        <h1 class="page-title">
+
             Settings
+
         </h1>
 
-        <div class="settings-card">
+        <div class="settings-section">
 
-            <button
-                class="primary-btn"
-                onclick="exportBackup()">
+            <h3>
+                Backup & Restore
+            </h3>
 
-                Export Backup
+            <div class="settings-actions">
 
-            </button>
+                <button
+                    class="primary-btn"
+                    onclick="exportBackup()">
+
+                    📤 Export Backup
+
+                </button>
+
+                <button
+                    class="primary-btn"
+                    onclick="
+                        document
+                        .getElementById(
+                            'importFile'
+                        )
+                        .click()
+                    ">
+
+                    📥 Import Backup
+
+                </button>
+
+                <input
+                    hidden
+                    type="file"
+                    id="importFile"
+                    accept=".json"
+                    onchange="importBackup(event)"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h3>
+                Danger Zone
+            </h3>
 
             <button
                 class="danger-btn"
                 onclick="resetAllData()">
 
-                Reset All Data
+                🗑 Reset All Data
 
             </button>
 
@@ -291,6 +351,7 @@ function loadKnowledgeBase() {
             </p>
 
         </div>
+        <br><br>
 
         <div class="knowledge-grid">
 
@@ -321,9 +382,20 @@ function renderEntryCard(entry) {
 
             </div>
 
-            <div class="tags">
+            <div class="tag-container">
 
-                ${entry.tags}
+                ${
+                    entry.tags
+                        .split(",")
+                        .map(
+                            tag => `
+                            <span class="tag-chip">
+                                ${tag.trim()}
+                            </span>
+                        `
+                        )
+                        .join("")
+                }
 
             </div>
 
@@ -692,6 +764,47 @@ function updateEntry(id) {
     );
 
     loadKnowledgeBase();
+}
+
+function importBackup(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) return;
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(e) {
+
+        try {
+
+            const entries =
+                JSON.parse(
+                    e.target.result
+                );
+
+            saveEntries(entries);
+
+            alert(
+                "Backup Imported"
+            );
+
+            loadDashboard();
+
+        } catch {
+
+            alert(
+                "Invalid Backup File"
+            );
+
+        }
+
+    };
+
+    reader.readAsText(file);
+
 }
 
 loadDashboard();
