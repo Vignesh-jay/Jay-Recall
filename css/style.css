@@ -429,3 +429,10 @@ body {
 
     cursor: pointer;
 }
+
+.dashboard-subtitle {
+
+    color: var(--muted);
+
+    margin-bottom: 24px;
+}

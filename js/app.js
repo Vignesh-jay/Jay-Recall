@@ -27,6 +27,14 @@ function loadDashboard() {
 
         </h1>
 
+        <p class="dashboard-subtitle">
+
+            Search your knowledge.
+            Find your solutions.
+            Never learn the same thing twice.
+
+        </p>
+
         <div class="stats-grid">
 
             <div class="stat-card">
@@ -324,8 +332,13 @@ function renderEntryCard(entry) {
                 <button
                     onclick="viewEntry(${entry.id})">
 
-                    👁 View
+                    👁
+                </button>
 
+                <button
+                    onclick="editEntry(${entry.id})">
+
+                    ✏
                 </button>
 
                 <button
@@ -343,7 +356,6 @@ function renderEntryCard(entry) {
                     onclick="deleteEntryRecord(${entry.id})">
 
                     🗑
-
                 </button>
 
             </div>
@@ -363,21 +375,98 @@ function viewEntry(id) {
     document.getElementById("content")
         .innerHTML = `
 
-        <h1>
-            ${entry.title}
-        </h1>
+        <div class="entry-view">
 
-        <p>
-            ${entry.category}
-        </p>
+            <h1>
 
-        <hr>
+                ${entry.title}
 
-        <pre>
+            </h1>
+
+            <div class="entry-meta">
+
+                <span>
+
+                    ${entry.category}
+
+                </span>
+
+            </div>
+
+            <div class="tags">
+
+                ${entry.tags}
+
+            </div>
+
+            <hr>
+
+            <pre>
 
 ${entry.content}
 
-        </pre>
+            </pre>
+
+            <button
+                class="primary-btn"
+                onclick="editEntry(${entry.id})">
+
+                Edit Entry
+
+            </button>
+
+        </div>
+
+    `;
+}
+
+function editEntry(id) {
+
+    const entry =
+        getEntries().find(
+            e => e.id === id
+        );
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <h1 class="page-title">
+
+            Edit Entry
+
+        </h1>
+
+        <div class="form-card">
+
+            <input
+                id="editTitle"
+                value="${entry.title}"
+            >
+
+            <input
+                id="editCategory"
+                value="${entry.category}"
+            >
+
+            <input
+                id="editTags"
+                value="${entry.tags}"
+            >
+
+            <textarea
+                id="editContent"
+                rows="10"
+            >${entry.content}</textarea>
+
+            <button
+                class="primary-btn"
+                onclick="updateEntry(${entry.id})">
+
+                Save Changes
+
+            </button>
+
+        </div>
 
     `;
 }
@@ -386,7 +475,20 @@ function toggleFavoriteEntry(id) {
 
     toggleFavorite(id);
 
-    loadKnowledgeBase();
+    if (
+        document
+            .getElementById(
+                "searchInput"
+            )
+    ) {
+
+        performSearch();
+
+    } else {
+
+        loadKnowledgeBase();
+
+    }
 
 }
 
@@ -541,6 +643,55 @@ function resetAllData() {
 
     loadDashboard();
 
+}
+
+function updateEntry(id) {
+
+    const entries =
+        getEntries();
+
+    const entry =
+        entries.find(
+            e => e.id === id
+        );
+
+    if (!entry) return;
+
+    entry.title =
+        document
+            .getElementById(
+                "editTitle"
+            ).value;
+
+    entry.category =
+        document
+            .getElementById(
+                "editCategory"
+            ).value;
+
+    entry.tags =
+        document
+            .getElementById(
+                "editTags"
+            ).value;
+
+    entry.content =
+        document
+            .getElementById(
+                "editContent"
+            ).value;
+
+    entry.updatedAt =
+        new Date()
+            .toISOString();
+
+    saveEntries(entries);
+
+    alert(
+        "Entry Updated"
+    );
+
+    loadKnowledgeBase();
 }
 
 loadDashboard();
