@@ -63,7 +63,7 @@ body {
 
     color: var(--muted);
 
-    font-size: 14px;
+    font-size: 12px;
 
     margin-bottom: 40px;
 }
@@ -1024,6 +1024,8 @@ select {
         font-weight: 700;
 
         color: white;
+
+        margin-bottom: 5px;
     }
 
     .mobile-subtitle {
@@ -1047,4 +1049,191 @@ select {
     transform: translateY(-3px);
 
     background: #24324a;
+}
+
+.type-badge {
+
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.badge-note {
+
+    background: rgba(99,102,241,.15);
+
+    color: #A5B4FC;
+}
+
+.badge-command {
+
+    background: rgba(245,158,11,.15);
+
+    color: #FBBF24;
+}
+
+.badge-troubleshoot {
+
+    background: rgba(239,68,68,.15);
+
+    color: #F87171;
+}
+
+.badge-docs {
+
+    background: rgba(59,130,246,.15);
+
+    color: #60A5FA;
+}
+
+.badge-infra {
+
+    background: rgba(16,185,129,.15);
+
+    color: #34D399;
+}
+
+.badge-security {
+
+    background: rgba(168,85,247,.15);
+
+    color: #C084FC;
+}
+
+.badge-checklist {
+
+    background: rgba(14,165,233,.15);
+
+    color: #38BDF8;
+}
+
+.starter-modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .75
+        );
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 99999;
+}
+
+.starter-card {
+
+    width: 450px;
+
+    background: #111827;
+
+    border: 1px solid #1e293b;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.4);
+
+}
+
+.starter-card p {
+
+    margin-top: 5px;
+}
+
+.starter-actions {
+
+    display: flex;
+
+    gap: 12px;
+
+    justify-content: center;
+
+    margin-top: 20px;
+
+}
+
+.primary-btn {
+
+    background: #6366f1;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 18px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    transition: .2s;
+}
+
+.primary-btn:hover {
+
+    transform: translateY(-2px);
+
+    background: #7477ff;
+
+}
+
+.secondary-btn {
+
+    background: transparent;
+
+    border: 1px solid #334155;
+
+    color: #94a3b8;
+
+    padding: 12px 18px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.secondary-btn:hover {
+
+    background: rgba(255,255,255,.05);
+
+    color: white;
+
+}
+
+.starter-features {
+
+    margin: 20px 0;
+
+    color: #94a3b8;
+
+    line-height: 1.8;
+
+}
+
+.recent-item:hover,
+.quick-command:hover,
+.search-chip:hover {
+    transform: translateY(-2px);
 }

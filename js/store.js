@@ -77,7 +77,17 @@ function saveEntry() {
 
     };
 
-    if (type === "note") {
+    if (
+        type === "📝 Knowledge Note"
+        ||
+        type === "📚 Documentation"
+        ||
+        type === "☁️ Infrastructure"
+        ||
+        type === "🔐 Security"
+        ||
+        type === "📋 Checklist"
+    ) {
 
         entry.title =
             document.getElementById(
@@ -93,12 +103,10 @@ function saveEntry() {
             document.getElementById(
                 "contentText"
             ).value;
-
-        entry.category =
-            "Knowledge";
     }
 
-    if (type === "command") {
+    if (type === "⚡ Command Vault") 
+    {
 
         entry.title =
             document.getElementById(
@@ -119,12 +127,9 @@ function saveEntry() {
             document.getElementById(
                 "description"
             ).value;
-
-        entry.category =
-            "Command Vault";
     }
 
-    if (type === "troubleshooting") {
+    if (type === "🛠 Troubleshooting") {
 
         entry.title =
             document.getElementById(
@@ -145,9 +150,6 @@ function saveEntry() {
             document.getElementById(
                 "outcome"
             ).value;
-
-        entry.category =
-            "Troubleshooting";
     }
 
     addEntry(entry);

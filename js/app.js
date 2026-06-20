@@ -14,7 +14,7 @@ function loadDashboard() {
     const categories =
         [...new Set(
             entries.map(
-                e => e.category
+                e => e.type
             )
         )];
 
@@ -28,7 +28,7 @@ function loadDashboard() {
     const favoriteCommands =
         entries.filter(
             e =>
-                e.type === "command" &&
+                e.type === "⚡ Command Vault" &&
                 e.favorite
         );
 
@@ -77,7 +77,7 @@ function loadDashboard() {
 
             <div class="stat-card">
 
-                <h3>Categories</h3>
+                <h3>Types</h3>
 
                 <h1>${categories.length}</h1>
 
@@ -126,7 +126,7 @@ function loadDashboard() {
 
                         <span>
 
-                            ${entry.category}
+                            ${entry.type}
 
                         </span>
 
@@ -215,6 +215,7 @@ function loadDashboard() {
         }
 
     </div>
+    <br>
 
 </div>
 
@@ -273,22 +274,24 @@ function loadAddEntry() {
             <label>
                 Entry Type
             </label>
-
+            <br><br>
             <select
                 id="entryType"
                 onchange="renderTemplate()">
 
-                <option value="note">
-                    📝 Knowledge Note
-                </option>
+                <option>📝 Knowledge Note</option>
 
-                <option value="command">
-                    ⚡ Command Vault
-                </option>
+                <option>⚡ Command Vault</option>
 
-                <option value="troubleshooting">
-                    🛠 Troubleshooting
-                </option>
+                <option>🛠 Troubleshooting</option>
+
+                <option>📚 Documentation</option>
+
+                <option>☁️ Infrastructure</option>
+
+                <option>🔐 Security</option>
+
+                <option>📋 Checklist</option>
 
             </select>
 
@@ -343,6 +346,7 @@ function loadFavorites() {
             }
 
         </div>
+        <br>
 
     `;
 
@@ -366,6 +370,14 @@ function loadSettings() {
             </h3>
 
             <div class="settings-actions">
+
+                <button
+                    class="primary-btn"
+                    onclick="loadStarterPack()">
+
+                    📚 Load Starter Pack
+
+                </button>
 
                 <button
                     class="primary-btn"
@@ -458,8 +470,44 @@ function loadKnowledgeBase() {
             ${entries.map(renderEntryCard).join("")}
 
         </div>
+        <br>
 
     `;
+}
+
+function getTypeClass(type) {
+
+    switch(type) {
+
+        case "⚡ Command Vault":
+
+            return "badge-command";
+
+        case "🛠 Troubleshooting":
+
+            return "badge-troubleshoot";
+
+        case "📚 Documentation":
+
+            return "badge-docs";
+
+        case "☁️ Infrastructure":
+
+            return "badge-infra";
+
+        case "🔐 Security":
+
+            return "badge-security";
+
+        case "📋 Checklist":
+
+            return "badge-checklist";
+
+        default:
+
+            return "badge-note";
+    }
+
 }
 
 function renderEntryCard(entry) {
@@ -474,9 +522,13 @@ function renderEntryCard(entry) {
                     ${entry.title}
                 </h3>
 
-                <span class="category-badge">
+                <span
+                    class="
+                        type-badge
+                        ${getTypeClass(entry.type)}
+                    ">
 
-                    ${entry.category}
+                    ${entry.type}
 
                 </span>
 
@@ -485,7 +537,7 @@ function renderEntryCard(entry) {
             <div class="tag-container">
 
                 ${
-                    entry.tags
+                    (entry.tags || "")
                         .split(",")
                         .map(
                             tag => `
@@ -546,15 +598,16 @@ function viewEntry(id) {
 
     if (!entry) return;
 
-    switch(entry.type) {
+    switch(entry.type) 
+    {
 
-        case "command":
+        case "⚡ Command Vault":
 
             renderCommandView(entry);
 
             break;
 
-        case "troubleshooting":
+        case "🛠 Troubleshooting":
 
             renderTroubleshootingView(entry);
 
@@ -591,10 +644,65 @@ function editEntry(id) {
                 value="${entry.title}"
             >
 
-            <input
-                id="editCategory"
-                value="${entry.category}"
-            >
+            <select id="editType">
+
+              <option ${
+                  entry.type === "📝 Knowledge Note"
+                      ? "selected"
+                      : ""
+              }>
+                  📝 Knowledge Note
+              </option>
+
+              <option ${
+                  entry.type === "⚡ Command Vault"
+                      ? "selected"
+                      : ""
+              }>
+                  ⚡ Command Vault
+              </option>
+
+              <option ${
+                  entry.type === "🛠 Troubleshooting"
+                      ? "selected"
+                      : ""
+              }>
+                  🛠 Troubleshooting
+              </option>
+
+              <option ${
+                  entry.type === "📚 Documentation"
+                      ? "selected"
+                      : ""
+              }>
+                  📚 Documentation
+              </option>
+
+              <option ${
+                  entry.type === "☁️ Infrastructure"
+                      ? "selected"
+                      : ""
+              }>
+                  ☁️ Infrastructure
+              </option>
+
+              <option ${
+                  entry.type === "🔐 Security"
+                      ? "selected"
+                      : ""
+              }>
+                  🔐 Security
+              </option>
+
+              <option ${
+                  entry.type === "📋 Checklist"
+                      ? "selected"
+                      : ""
+              }>
+                  📋 Checklist
+              </option>
+
+            </select>
 
             <input
                 id="editTags"
@@ -680,31 +788,26 @@ function performSearch() {
 
             return (
 
-                entry.title
+                (entry.title || "")
                     .toLowerCase()
                     .includes(query)
 
                 ||
 
-                entry.category
+                (entry.type || "")
                     .toLowerCase()
                     .includes(query)
 
                 ||
 
-                entry.tags
+                (entry.tags || "")
                     .toLowerCase()
                     .includes(query)
 
                 ||
 
-                entry.content
+                (entry.content || "")
                     .toLowerCase()
-                    .includes(query)
-                
-                ||
-
-                entry.content
                     .includes(query)
 
             );
@@ -816,10 +919,10 @@ function updateEntry(id) {
                 "editTitle"
             ).value;
 
-    entry.category =
+    entry.type =
         document
             .getElementById(
-                "editCategory"
+                "editType"
             ).value;
 
     entry.tags =
@@ -902,28 +1005,35 @@ function renderTemplate() {
 
     switch(type) {
 
-        case "note":
+    case "📝 Knowledge Note":
 
-            container.innerHTML =
-                noteTemplate();
+    case "📚 Documentation":
 
-            break;
+    case "☁️ Infrastructure":
 
-        case "command":
+    case "🔐 Security":
 
-            container.innerHTML =
-                commandTemplate();
+    case "📋 Checklist":
 
-            break;
+        container.innerHTML =
+            noteTemplate();
 
-        case "troubleshooting":
+        break;
 
-            container.innerHTML =
-                troubleshootingTemplate();
+    case "⚡ Command Vault":
 
-            break;
+        container.innerHTML =
+            commandTemplate();
 
-    }
+        break;
+
+    case "🛠 Troubleshooting":
+
+        container.innerHTML =
+            troubleshootingTemplate();
+
+        break;
+}
 }
 
 function noteTemplate() {
@@ -1308,11 +1418,6 @@ function quickSearch() {
                 (entry.solution || "")
                     .toLowerCase()
                     .includes(query)
-                
-                ||
-
-                entry.content
-                    .includes(query)
 
             );
 
@@ -1386,17 +1491,26 @@ function getTypeIcon(type) {
 
     switch(type) {
 
-        case "command":
-
+        case "⚡ Command Vault":
             return "⚡";
 
-        case "troubleshooting":
-
+        case "🛠 Troubleshooting":
             return "🛠";
 
-        default:
+        case "📚 Documentation":
+            return "📚";
 
-            return "📄";
+        case "☁️ Infrastructure":
+            return "☁️";
+
+        case "🔐 Security":
+            return "🔐";
+
+        case "📋 Checklist":
+            return "📋";
+
+        default:
+            return "📝";
 
     }
 }
@@ -1455,7 +1569,123 @@ function openRecentSearch(title) {
     clearQuickSearch();
 }
 
+function checkStarterPack() {
+
+    const entries =
+        getEntries();
+
+    if (
+        entries.length === 0
+    ) {
+
+        showStarterPackModal();
+
+    }
+
+}
+
+function showStarterPackModal() {
+
+    const modal =
+        document.createElement("div");
+
+    modal.className =
+        "starter-modal";
+
+    modal.innerHTML = `
+
+    <div class="starter-card">
+
+        <h2>🧠 Welcome to Jay Recall</h2>
+
+        <p>
+            Load the built-in knowledge pack?
+        </p>
+
+        <div class="starter-features">
+
+        ⚡ 50+ Linux Commands<br>
+        🐳 Docker Cheat Sheet<br>
+        ☁️ Cloudflare & Networking<br>
+        🔐 Security Notes<br>
+        🛠 Troubleshooting Guides<br>
+        📋 IT Checklists
+
+        </div>
+
+        <div class="starter-actions">
+
+            <button
+                class="primary-btn"
+                onclick="loadStarterPack()">
+
+                ⚡ Load Starter Pack
+
+            </button>
+
+            <button
+                class="secondary-btn"
+                onclick="closeStarterModal()">
+
+                Skip For Now
+
+            </button>
+
+        </div>
+
+    </div>
+
+    `;
+
+    document.body.appendChild(
+        modal
+    );
+}
+
+function loadStarterPack() {
+
+    if (
+        !Array.isArray(
+            STARTER_DATA
+        )
+    ) {
+
+        alert(
+            "Starter data missing"
+        );
+
+        return;
+    }
+
+    saveEntries(
+        STARTER_DATA
+    );
+
+    showToast(
+        "Starter Pack Loaded"
+    );
+
+    setTimeout(
+        () => {
+
+            location.reload();
+
+        },
+        1000
+    );
+
+}
+
+function closeStarterModal() {
+
+    document
+        .querySelector(".starter-modal")
+        ?.remove();
+
+}
+
 loadDashboard();
+checkStarterPack();
 
 document
     .getElementById(
