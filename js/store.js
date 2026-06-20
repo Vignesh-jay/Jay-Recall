@@ -59,21 +59,16 @@ function toggleFavorite(id) {
 
 function saveEntry() {
 
-    const entry = {
+    const type =
+        document.getElementById(
+            "entryType"
+        ).value;
+
+    let entry = {
 
         id: Date.now(),
 
-        title:
-            document.getElementById("title").value,
-
-        category:
-            document.getElementById("category").value,
-
-        tags:
-            document.getElementById("tags").value,
-
-        content:
-            document.getElementById("contentText").value,
+        type: type,
 
         favorite: false,
 
@@ -82,10 +77,84 @@ function saveEntry() {
 
     };
 
+    if (type === "note") {
+
+        entry.title =
+            document.getElementById(
+                "title"
+            ).value;
+
+        entry.tags =
+            document.getElementById(
+                "tags"
+            ).value;
+
+        entry.content =
+            document.getElementById(
+                "contentText"
+            ).value;
+
+        entry.category =
+            "Knowledge";
+    }
+
+    if (type === "command") {
+
+        entry.title =
+            document.getElementById(
+                "title"
+            ).value;
+
+        entry.tags =
+            document.getElementById(
+                "tags"
+            ).value;
+
+        entry.command =
+            document.getElementById(
+                "command"
+            ).value;
+
+        entry.description =
+            document.getElementById(
+                "description"
+            ).value;
+
+        entry.category =
+            "Command Vault";
+    }
+
+    if (type === "troubleshooting") {
+
+        entry.title =
+            document.getElementById(
+                "title"
+            ).value;
+
+        entry.problem =
+            document.getElementById(
+                "problem"
+            ).value;
+
+        entry.solution =
+            document.getElementById(
+                "solution"
+            ).value;
+
+        entry.outcome =
+            document.getElementById(
+                "outcome"
+            ).value;
+
+        entry.category =
+            "Troubleshooting";
+    }
+
     addEntry(entry);
 
-    alert("Knowledge Saved");
+    alert(
+        "Knowledge Saved"
+    );
 
     loadDashboard();
-
 }

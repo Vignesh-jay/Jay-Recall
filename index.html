@@ -42,14 +42,14 @@
                 <div class="nav-item"
                     onclick="loadAddEntry()">
 
-                    ➕ Add Entry
+                    📥 Capture Knowledge
 
                 </div>
 
                 <div class="nav-item"
                     onclick="loadKnowledgeBase()">
 
-                    📖 Knowledge Base
+                    🗄 Recall Vault
 
                 </div>
 
@@ -71,8 +71,8 @@
 
             <div class="sidebar-footer">
 
-                Go get a memory loss.<br>
-                I'm here.
+                Go get a memory loss. I'm here. <br>
+                Jay Recall v1.0
 
             </div>
 
@@ -81,14 +81,44 @@
         <!-- Main Content -->
 
         <main class="content">
+            <div class="mobile-header">
 
+                <span class="mobile-logo">
+                    🧠
+                </span>
+
+                <div>
+
+                    <div class="mobile-title">
+
+                        Jay Recall
+
+                    </div>
+
+                    <div class="mobile-subtitle">
+
+                        Never Google The Same Thing Twice
+
+                    </div>
+
+                </div>
+
+            </div>
             <div class="quick-search">
 
-                <input
-                    placeholder="Search your knowledge..."
-                    onclick="loadSearch()"
-                    readonly
-                >
+                <div class="global-search-wrapper">
+
+                    <input
+                        id="globalSearch"
+                        type="text"
+                        placeholder="Search commands, notes, fixes..."
+                    >
+
+                    <div id="quickSearchResults">
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -102,31 +132,30 @@
             <button
                 onclick="loadDashboard()">
 
-                🏠
-            </button>
+                <span>🏠</span><br>
+                <small>Home</small>
 
-            <button
-                onclick="loadSearch()">
-
-                🔍
             </button>
 
             <button
                 onclick="loadAddEntry()">
 
-                ➕
+                <span>➕</span><br>
+                <small>Add</small>
             </button>
-
+            
             <button
-                onclick="loadFavorites()">
+                onclick="loadSearch()">
 
-                ⭐
+                <span>🔍</span><br>
+                <small>Search</small>
             </button>
 
             <button
                 onclick="loadSettings()">
 
-                ⚙
+                <span>⚙</span><br>
+                <small>Settings</small>
             </button>
 
         </div>

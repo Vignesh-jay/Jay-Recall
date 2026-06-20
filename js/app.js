@@ -25,6 +25,21 @@ function loadDashboard() {
               ).toLocaleDateString()
             : "Never";
 
+    const favoriteCommands =
+        entries.filter(
+            e =>
+                e.type === "command" &&
+                e.favorite
+        );
+
+    const recentSearches =
+        JSON.parse(
+            localStorage.getItem(
+                "recent_searches"
+            )
+        ) || [];
+
+      
     document.getElementById("content")
         .innerHTML = `
 
@@ -44,7 +59,7 @@ function loadDashboard() {
 
         <div class="stats-grid">
 
-            <div class="stat-card">
+            <div class="stat-card" onclick="loadKnowledgeBase()">
 
                 <h3>Entries</h3>
 
@@ -52,7 +67,7 @@ function loadDashboard() {
 
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card" onclick="loadFavorites()">
 
                 <h3>Favorites</h3>
 
@@ -83,34 +98,125 @@ function loadDashboard() {
         </div>
         <div class="recent-section">
 
-                <h2>
-                    Recent Knowledge
-                </h2>
+            <h2>
+                Recent Knowledge
+            </h2>
+            <br>
 
-                ${
-                    recentEntries.map(entry => `
+            ${
+                recentEntries.map(entry => `
 
-                        <div class="recent-item">
+                    <div
+                      class="recent-item"
+                      onclick="viewEntry(${entry.id})">
+
+                        <div class="recent-left">
 
                             <strong>
-
                                 ${entry.title}
-
                             </strong>
-
-                            <span>
-
-                                ${entry.category}
-
-                            </span>
 
                         </div>
 
-                    `).join("")
+                        <div class="recent-arrow">
 
-                }
+                            →
 
-            </div>
+                        </div>
+
+                        <span>
+
+                            ${entry.category}
+
+                        </span>
+
+                    </div>
+
+                `).join("")
+
+            }
+
+        </div>
+        <div class="favorite-commands">
+
+            <h2>
+
+                ⭐ Favorite Commands
+
+            </h2>
+            <br>
+
+            ${
+                favoriteCommands.length
+                ?
+                favoriteCommands
+                    .slice(0, 5)
+                    .map(command => `
+
+                        <div
+                            class="quick-command">
+
+                            <span>
+
+                                ${command.title}
+
+                            </span>
+
+                            <button
+                                onclick="
+                                    copyCommand(
+                                        \`${command.command}\`,
+                                        this
+                                    )
+                                ">
+
+                                ⧉
+
+                            </button>
+
+                        </div>
+
+                    `)
+                    .join("")
+                :
+                `
+                    <div
+                        class="empty-state">
+
+                        No favorite commands.
+
+                    </div>
+                `
+            }
+
+        </div>
+        <div class="recent-searches">
+
+    <h2>
+        🔍 Recent Searches
+    </h2>
+
+    <div class="search-chips">
+
+        ${
+            recentSearches
+                .map(search => `
+
+                    <div
+                        class="search-chip"
+                        onclick="openRecentSearch('${search}')">
+
+                        ${search}
+
+                    </div>
+
+                `)
+                .join("")
+        }
+
+    </div>
+
+</div>
 
     `;
 }
@@ -158,64 +264,41 @@ function loadAddEntry() {
 
         <h1 class="page-title">
 
-            Add Knowledge Entry
+            Capture Knowledge
 
         </h1>
 
         <div class="form-card">
 
-            <input
-                id="title"
-                placeholder="Title"
-            >
+            <label>
+                Entry Type
+            </label>
 
-            <select id="category">
+            <select
+                id="entryType"
+                onchange="renderTemplate()">
 
-                <option>
-                    Infrastructure
+                <option value="note">
+                    📝 Knowledge Note
                 </option>
 
-                <option>
-                    Development
+                <option value="command">
+                    ⚡ Command Vault
                 </option>
 
-                <option>
-                    Security
-                </option>
-
-                <option>
-                    Networking
-                </option>
-
-                <option>
-                    Commands
-                </option>
-
-                <option>
-                    Troubleshooting
-                </option>
-
-                <option>
-                    Personal
+                <option value="troubleshooting">
+                    🛠 Troubleshooting
                 </option>
 
             </select>
 
-            <input
-                id="tags"
-                placeholder="docker, cloudflare"
-            >
+            <div id="templateContainer">
 
-            <textarea
-                id="contentText"
-                rows="10"
-                placeholder="Enter knowledge..."
-            ></textarea>
+            </div>
 
             <button
                 class="primary-btn"
-                onclick="saveEntry()"
-            >
+                onclick="saveEntry()">
 
                 Save Entry
 
@@ -224,6 +307,8 @@ function loadAddEntry() {
         </div>
 
     `;
+
+    renderTemplate();
 }
 
 function loadFavorites() {
@@ -329,6 +414,21 @@ function loadSettings() {
                 🗑 Reset All Data
 
             </button>
+
+        </div>
+        <div class="settings-section">
+
+            <h3>
+                About
+            </h3>
+
+            <p>
+                Jay Recall v1.0
+                <br><br>
+                Never Google The Same Thing Twice
+                <br><br>
+                Built by Mr. JAY
+            </p>
 
         </div>
 
@@ -444,52 +544,28 @@ function viewEntry(id) {
             e => e.id === id
         );
 
-    document.getElementById("content")
-        .innerHTML = `
+    if (!entry) return;
 
-        <div class="entry-view">
+    switch(entry.type) {
 
-            <h1>
+        case "command":
 
-                ${entry.title}
+            renderCommandView(entry);
 
-            </h1>
+            break;
 
-            <div class="entry-meta">
+        case "troubleshooting":
 
-                <span>
+            renderTroubleshootingView(entry);
 
-                    ${entry.category}
+            break;
 
-                </span>
+        default:
 
-            </div>
+            renderNoteView(entry);
 
-            <div class="tags">
-
-                ${entry.tags}
-
-            </div>
-
-            <hr>
-
-            <pre>
-
-${entry.content}
-
-            </pre>
-
-            <button
-                class="primary-btn"
-                onclick="editEntry(${entry.id})">
-
-                Edit Entry
-
-            </button>
-
-        </div>
-
-    `;
+            break;
+    }
 }
 
 function editEntry(id) {
@@ -624,6 +700,11 @@ function performSearch() {
 
                 entry.content
                     .toLowerCase()
+                    .includes(query)
+                
+                ||
+
+                entry.content
                     .includes(query)
 
             );
@@ -807,4 +888,625 @@ function importBackup(event) {
 
 }
 
+function renderTemplate() {
+
+    const type =
+        document.getElementById(
+            "entryType"
+        ).value;
+
+    const container =
+        document.getElementById(
+            "templateContainer"
+        );
+
+    switch(type) {
+
+        case "note":
+
+            container.innerHTML =
+                noteTemplate();
+
+            break;
+
+        case "command":
+
+            container.innerHTML =
+                commandTemplate();
+
+            break;
+
+        case "troubleshooting":
+
+            container.innerHTML =
+                troubleshootingTemplate();
+
+            break;
+
+    }
+}
+
+function noteTemplate() {
+
+    return `
+
+        <input
+            id="title"
+            placeholder="Title"
+        >
+
+        <input
+            id="tags"
+            placeholder="Tags"
+        >
+
+        <textarea
+            id="contentText"
+            rows="8"
+            placeholder="Knowledge..."
+        ></textarea>
+
+    `;
+}
+
+function commandTemplate() {
+
+    return `
+
+        <input
+            id="title"
+            placeholder="Command Title"
+        >
+
+        <input
+            id="tags"
+            placeholder="docker,linux"
+        >
+
+        <textarea
+            id="command"
+            rows="4"
+            placeholder="docker compose up -d"
+        ></textarea>
+
+        <textarea
+            id="description"
+            rows="4"
+            placeholder="What does this command do?"
+        ></textarea>
+
+    `;
+}
+
+function troubleshootingTemplate() {
+
+    return `
+
+        <input
+            id="title"
+            placeholder="Issue Title"
+        >
+
+        <textarea
+            id="problem"
+            rows="4"
+            placeholder="Problem"
+        ></textarea>
+
+        <textarea
+            id="solution"
+            rows="5"
+            placeholder="Solution"
+        ></textarea>
+
+        <textarea
+            id="outcome"
+            rows="3"
+            placeholder="Outcome"
+        ></textarea>
+
+    `;
+}
+
+function renderNoteView(entry) {
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <div class="entry-view">
+
+            <div class="entry-type">
+
+                📝 Knowledge Note
+
+            </div>
+
+            <h1>
+
+                ${entry.title}
+
+            </h1>
+
+            <div class="tag-container">
+
+                ${renderTags(entry.tags)}
+
+            </div>
+
+            <div class="entry-content">
+
+                ${entry.content || ""}
+
+            </div>
+
+            <div class="entry-footer">
+
+                Created:
+                ${new Date(
+                    entry.createdAt
+                ).toLocaleString()}
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+function renderCommandView(entry) {
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <div class="entry-view">
+
+            <div class="entry-type">
+
+                ⚡ Command Vault
+
+            </div>
+
+            <h1>
+
+                ${entry.title}
+
+            </h1>
+            <br>
+            <p>
+
+                ${entry.description || ""}
+
+            </p>
+
+            <br>
+            <div class="tag-container">
+
+                ${renderTags(entry.tags)}
+
+            </div>
+
+            <div class="command-block">
+
+                <code class="command-text">
+
+                    ${entry.command || ""}
+
+                </code>
+
+                <button
+                    class="copy-icon-btn"
+                    onclick="copyCommand(
+                        \`${entry.command}\`,
+                        this
+                    )"
+                    title="Copy Command">
+
+                    ⧉
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+function renderTroubleshootingView(entry) {
+
+    document.getElementById("content")
+        .innerHTML = `
+
+        <div class="entry-view">
+
+            <div class="entry-type">
+
+                🛠 Troubleshooting
+
+            </div>
+
+            <h1>
+
+                ${entry.title}
+
+            </h1>
+
+            <h3>
+                Problem
+            </h3>
+
+            <div class="info-box">
+
+                ${entry.problem || ""}
+
+            </div>
+
+            <h3>
+                Solution
+            </h3>
+
+            <div class="info-box">
+
+                ${entry.solution || ""}
+
+            </div>
+
+            <h3>
+                Outcome
+            </h3>
+
+            <div class="info-box">
+
+                ${entry.outcome || ""}
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+function copyCommand(command, button = null) {
+
+    navigator.clipboard.writeText(
+        command
+    );
+
+    showToast(
+        "✓ Command Copied"
+    );
+
+    if (button) {
+
+        const original =
+            button.innerHTML;
+
+        button.innerHTML =
+            "✓";
+
+        setTimeout(() => {
+
+            button.innerHTML =
+                original;
+
+        }, 1500);
+
+    }
+
+}
+
+function renderTags(tags) {
+
+    if (!tags)
+        return "";
+
+    return tags
+        .split(",")
+        .map(tag => `
+
+            <span class="tag-chip">
+
+                ${tag.trim()}
+
+            </span>
+
+        `)
+        .join("");
+}
+
+function showToast(message) {
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "toast";
+
+    toast.textContent =
+        message;
+
+    document.body.appendChild(
+        toast
+    );
+
+    setTimeout(() => {
+
+        toast.classList.add(
+            "show"
+        );
+
+    }, 10);
+
+    setTimeout(() => {
+
+        toast.remove();
+
+    }, 2500);
+
+}
+
+function quickSearch() {
+
+    const query =
+        document
+            .getElementById(
+                "globalSearch"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+    const container =
+        document.getElementById(
+            "quickSearchResults"
+        );
+
+    if (!query) {
+
+        container.innerHTML = "";
+
+        return;
+    }
+
+    const results =
+        getEntries()
+
+        .filter(entry => {
+
+            return (
+
+                (entry.title || "")
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (entry.tags || "")
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (entry.content || "")
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (entry.command || "")
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (entry.problem || "")
+                    .toLowerCase()
+                    .includes(query)
+
+                ||
+
+                (entry.solution || "")
+                    .toLowerCase()
+                    .includes(query)
+                
+                ||
+
+                entry.content
+                    .includes(query)
+
+            );
+
+        })
+
+        .slice(0, 5);
+
+    renderQuickSearch(
+        results
+    );
+}
+
+function renderQuickSearch(
+    results
+) {
+
+    const container =
+        document.getElementById(
+            "quickSearchResults"
+        );
+
+    if (!results.length) {
+
+        container.innerHTML = "";
+
+        return;
+    }
+
+    container.innerHTML =
+    results.map(entry => `
+
+        <div
+            class="search-result-item"
+            onclick="openSearchResult(${entry.id})">
+
+            <div
+                class="search-result-title">
+
+                ${getTypeIcon(
+                    entry.type
+                )}
+
+                ${entry.title}
+
+            </div>
+
+            <div
+                class="search-result-subtitle">
+
+                ${
+                    entry.command
+                    ||
+                    entry.description
+                    ||
+                    entry.problem
+                    ||
+                    entry.content
+                    ||
+                    ""
+                }
+
+            </div>
+
+        </div>
+
+    `)
+    .join("");
+}
+
+function getTypeIcon(type) {
+
+    switch(type) {
+
+        case "command":
+
+            return "⚡";
+
+        case "troubleshooting":
+
+            return "🛠";
+
+        default:
+
+            return "📄";
+
+    }
+}
+
+function clearQuickSearch() {
+
+    document
+        .getElementById(
+            "globalSearch"
+        )
+        .value = "";
+
+    document
+        .getElementById(
+            "quickSearchResults"
+        )
+        .innerHTML = "";
+}
+
+function saveRecentSearch(query) {
+
+    let searches =
+        JSON.parse(
+            localStorage.getItem(
+                "recent_searches"
+            )
+        ) || [];
+
+    searches =
+        searches.filter(
+            s => s !== query
+        );
+
+    searches.unshift(query);
+
+    searches =
+        searches.slice(0, 5);
+
+    localStorage.setItem(
+        "recent_searches",
+        JSON.stringify(searches)
+    );
+}
+
+function openRecentSearch(title) {
+
+    const entry =
+        getEntries().find(
+            e => e.title === title
+        );
+
+    if (!entry) return;
+
+    viewEntry(entry.id);
+
+    clearQuickSearch();
+}
+
 loadDashboard();
+
+document
+    .getElementById(
+        "globalSearch"
+    )
+    .addEventListener(
+        "input",
+        quickSearch
+    );
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const search =
+            document.querySelector(
+                ".global-search-wrapper"
+            );
+
+        if (
+            !search.contains(
+                event.target
+            )
+        ) {
+
+            clearQuickSearch();
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (
+            (e.ctrlKey || e.metaKey)
+            &&
+            e.key === "k"
+        ) {
+
+            e.preventDefault();
+
+            document
+                .getElementById(
+                    "globalSearch"
+                )
+                .focus();
+
+        }
+
+    }
+);
